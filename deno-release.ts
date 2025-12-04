@@ -9,6 +9,7 @@
  *
  * @example
  * ```bash
+ * deno run -A jsr:@marianmeres/deno-release              # defaults to patch
  * deno run -A jsr:@marianmeres/deno-release patch
  * deno run -A jsr:@marianmeres/deno-release minor "Added new feature"
  * ```
@@ -142,21 +143,20 @@ export function bumpVersion(current: string, type: VersionType): string {
  * @returns Promise that resolves when release is complete
  */
 async function main(): Promise<void> {
-	const [versionType, ...messageParts] = Deno.args;
-	const customMessage = messageParts.join(" ");
+	const [firstArg, ...messageParts] = Deno.args;
 
-	// Check if version type is provided
-	if (!versionType) {
-		console.log(
-			"Usage: deno run -A jsr:@marianmeres/deno-release [major|minor|patch] [optional message]"
-		);
-		Deno.exit(1);
-	}
+	// Determine version type and custom message
+	// If first arg is a valid version type, use it; otherwise default to "patch"
+	// and treat all args as the message
+	let versionType: VersionType;
+	let customMessage: string;
 
-	// Validate version type
-	if (!VALID_VERSION_TYPES.includes(versionType as VersionType)) {
-		console.error(red("Error: Version type must be 'major', 'minor', or 'patch'"));
-		Deno.exit(1);
+	if (firstArg && VALID_VERSION_TYPES.includes(firstArg as VersionType)) {
+		versionType = firstArg as VersionType;
+		customMessage = messageParts.join(" ");
+	} else {
+		versionType = "patch";
+		customMessage = firstArg ? [firstArg, ...messageParts].join(" ") : "";
 	}
 
 	// Check if we're in a git repository
