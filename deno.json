@@ -1,0 +1,15 @@
+{
+	"name": "@marianmeres/deno-release",
+	"version": "1.0.0",
+	"exports": "./deno-release.ts",
+	"tasks": {
+		"test": "deno test --watch"
+	},
+	"imports": {},
+	"fmt": {
+		"useTabs": true,
+		"lineWidth": 90,
+		"indentWidth": 4,
+		"proseWrap": "preserve"
+	}
+}
