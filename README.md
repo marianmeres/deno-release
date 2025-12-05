@@ -8,6 +8,7 @@ repository.
 
 - Semantic versioning (`major`, `minor`, `patch`)
 - Interactive confirmation before making changes
+- Non-interactive mode with `--yes` flag for CI/CD pipelines
 - Validates clean git state (no uncommitted changes)
 - Warns when not on `main`/`master` branch
 - Creates annotated git tags with optional custom message
@@ -29,6 +30,10 @@ deno run -A jsr:@marianmeres/deno-release major
 
 # With custom message
 deno run -A jsr:@marianmeres/deno-release patch "Fixed critical bug"
+
+# Skip confirmation prompts (useful for CI/CD)
+deno run -A jsr:@marianmeres/deno-release --yes patch
+deno run -A jsr:@marianmeres/deno-release -y minor "New feature"
 ```
 
 ### As a Deno task
@@ -61,6 +66,7 @@ Then use anywhere:
 ```bash
 release patch
 release minor "New feature"
+release --yes patch  # non-interactive
 ```
 
 ## API

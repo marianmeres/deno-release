@@ -12,6 +12,7 @@
  * deno run -A jsr:@marianmeres/deno-release              # defaults to patch
  * deno run -A jsr:@marianmeres/deno-release patch
  * deno run -A jsr:@marianmeres/deno-release minor "Added new feature"
+ * deno run -A jsr:@marianmeres/deno-release --yes patch  # skip confirmation prompts
  * ```
  */
 
@@ -143,7 +144,11 @@ export function bumpVersion(current: string, type: VersionType): string {
  * @returns Promise that resolves when release is complete
  */
 async function main(): Promise<void> {
-	const [firstArg, ...messageParts] = Deno.args;
+	// Parse --yes/-y flag (can appear anywhere in args)
+	const args = Deno.args.filter((arg) => arg !== "--yes" && arg !== "-y");
+	const skipPrompts = Deno.args.length !== args.length;
+
+	const [firstArg, ...messageParts] = args;
 
 	// Determine version type and custom message
 	// If first arg is a valid version type, use it; otherwise default to "patch"
@@ -186,9 +191,11 @@ async function main(): Promise<void> {
 	const currentBranch = await runOrExit(["git", "rev-parse", "--abbrev-ref", "HEAD"]);
 	if (currentBranch !== "main" && currentBranch !== "master") {
 		console.log(yellow(`Warning: You're not on main/master branch (current: ${currentBranch})`));
-		const answer = prompt("Continue anyway? (y/N):");
-		if (answer?.toLowerCase() !== "y") {
-			Deno.exit(1);
+		if (!skipPrompts) {
+			const answer = prompt("Continue anyway? (y/N):");
+			if (answer?.toLowerCase() !== "y") {
+				Deno.exit(1);
+			}
 		}
 	}
 
@@ -216,10 +223,12 @@ async function main(): Promise<void> {
 	console.log("  - Push to remote repository");
 	console.log();
 
-	const confirm = prompt("Continue? (y/N):");
-	if (confirm?.toLowerCase() !== "y") {
-		console.log("Release cancelled.");
-		Deno.exit(0);
+	if (!skipPrompts) {
+		const confirm = prompt("Continue? (y/N):");
+		if (confirm?.toLowerCase() !== "y") {
+			console.log("Release cancelled.");
+			Deno.exit(0);
+		}
 	}
 
 	// Update version in deno.json
