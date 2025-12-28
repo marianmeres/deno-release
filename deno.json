@@ -4,7 +4,9 @@
 	"exports": "./deno-release.ts",
 	"tasks": {
 		"release": "deno run -A deno-release.ts",
-		"publish": "deno publish"
+		"publish": "deno publish",
+		"rp": "deno task release -y && deno publish",
+		"rpm": "deno task release minor -y && deno publish"
 	},
 	"imports": {},
 	"fmt": {
