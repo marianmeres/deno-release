@@ -164,8 +164,9 @@ async function main(): Promise<void> {
 		customMessage = firstArg ? [firstArg, ...messageParts].join(" ") : "";
 	}
 
-	// Check if we're in a git repository
-	if (!(await exists(".git", true))) {
+	// Check if we're in a git repository (works for submodules too)
+	const { code: gitCheck } = await run(["git", "rev-parse", "--is-inside-work-tree"]);
+	if (gitCheck !== 0) {
 		console.error(red("Error: Not in a git repository"));
 		Deno.exit(1);
 	}

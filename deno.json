@@ -2,9 +2,7 @@
 	"name": "@marianmeres/deno-release",
 	"version": "1.2.0",
 	"exports": "./deno-release.ts",
-	"tasks": {
-		"test": "deno test --watch"
-	},
+	"tasks": {},
 	"imports": {},
 	"fmt": {
 		"useTabs": true,
